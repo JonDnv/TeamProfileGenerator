@@ -10,9 +10,142 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+const employeeArray = [];
+
+inquirer
+  .prompt([
+    {
+      type: "input",
+      name: "managerName",
+      message: "What is the Team Manager's Name?",
+      validate: (answer) => {
+        if ((answer = "")) {
+          return "Please Enter a Valid Name.";
+        }
+        return true;
+      },
+    },
+    {
+      type: "input",
+      name: "managerId",
+      message: "What is the Team Manager's ID Number?",
+      validate: (answer) => {
+        if (isNaN(answer)) {
+          return "Please Enter a Valid ID Number.";
+        }
+        return true;
+      },
+    },
+    {
+      type: "input",
+      name: "managerEmail",
+      message: "What is the Team Manager's Email Address?",
+      validate: (answer) => {
+        if (answer === "" || !emailRegexp.test(answer)) {
+          return "Please Enter a Valid Email Address.";
+        }
+        return true;
+      },
+    },
+    {
+      type: "input",
+      name: "managerOffice",
+      message: "What is the Team Manager's Office Number?",
+      validate: (answer) => {
+        if (isNaN(answer)) {
+          return "Please Enter a Valid ID Number.";
+        }
+        return true;
+      },
+    },
+  ])
+  .then((data) => {
+    managerInfo = new Manager(
+      data.managerName,
+      data.managerId,
+      data.managerEmail,
+      data.managerOffice
+    );
+    employeeArray.push(managerInfo);
+  })
+  .then(() => {
+    inquirer
+      .prompt({
+        type: "input",
+        name: "engineerCount",
+        message: "How Many Engineers Are On the Team?",
+        validate: (answer) => {
+          if (isNaN(answer)) {
+            return "Please Enter a Number of Engineers.";
+          }
+          return true;
+        },
+      })
+      .then((data) => {
+        for (i = 0; i < data.engineerCount; i++) {
+          inquirer.prompt([
+            {
+              type: "input",
+              name: "engineerName",
+              message: "What is the Engineer's Name?",
+              validate: (answer) => {
+                if ((answer = "")) {
+                  return "Please Enter a Valid Name.";
+                }
+                return true;
+              },
+            },
+            {
+              type: "input",
+              name: "engineerId",
+              message: "What is the Engineer's ID Number?",
+              validate: (answer) => {
+                if (isNaN(answer)) {
+                  return "Please Enter a Valid ID Number.";
+                }
+                return true;
+              },
+            },
+            {
+              type: "input",
+              name: "engineerEmail",
+              message: "What is the Engineer's Email Address?",
+              validate: (answer) => {
+                if (answer === "" || !emailRegexp.test(answer)) {
+                  return "Please Enter a Valid Email Address.";
+                }
+                return true;
+              },
+            },
+            {
+              type: "input",
+              name: "engineerGitHub",
+              message: "What is the Engineer's GitHub Profile?",
+              validate: (answer) => {
+                if ((answer = "")) {
+                  return "Please Enter a Valid Name.";
+                }
+                return true;
+              },
+            },
+          ]);
+        }
+      });
+  });
+// .then((data) => {
+//   engineerInfo = new Engineer(
+//     data.engineerName,
+//     data.engineeerId,
+//     data.engineerEmail,
+//     data.engineerGitHub
+//   );
+//   employeeArray.push(engineerInfo);
+// }
+//   });
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
