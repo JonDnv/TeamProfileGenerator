@@ -10,11 +10,164 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
 const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 const employeeArray = [];
+
+function employeeType() {
+  inquirer
+    .prompt({
+      type: "list",
+      choices: ["Engineer", "Intern", "None"],
+      name: "entryChoice",
+      message: "What Type of Team Member Do You Want to Add?",
+    })
+    .then((response) => {
+      if (response.entryChoice === "Engineer") {
+        engineer();
+      } else if (response.entryChoice === "Intern") {
+        intern();
+      } else {
+        createHtml();
+      }
+    });
+}
+
+function engineer() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "engineerName",
+        message: "What is the Engineer's Name?",
+        validate: (answer) => {
+          if ((answer = "")) {
+            return "Please Enter a Valid Name.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "engineerId",
+        message: "What is the Engineer's ID Number?",
+        validate: (answer) => {
+          if (isNaN(answer)) {
+            return "Please Enter a Valid ID Number.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "engineerEmail",
+        message: "What is the Engineer's Email Address?",
+        validate: (answer) => {
+          if (answer === "" || !emailRegexp.test(answer)) {
+            return "Please Enter a Valid Email Address.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "engineerGitHub",
+        message: "What is the Engineer's GitHub Profile?",
+        validate: (answer) => {
+          if ((answer = "")) {
+            return "Please Enter a Valid GitHub Profile.";
+          }
+          return true;
+        },
+      },
+    ])
+    .then((data) => {
+      engineerInfo = new Engineer(
+        data.engineerName,
+        data.engineerId,
+        data.engineerEmail,
+        data.engineerGitHub
+      );
+      employeeArray.push(engineerInfo);
+      employeeType();
+    });
+}
+
+function intern() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "internName",
+        message: "What is the Intern's Name?",
+        validate: (answer) => {
+          if ((answer = "")) {
+            return "Please Enter a Valid Name.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "internID",
+        message: "What is the Intern's ID Number?",
+        validate: (answer) => {
+          if (isNaN(answer)) {
+            return "Please Enter a Valid ID Number.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "internEmail",
+        message: "What is the Intern's Email Address?",
+        validate: (answer) => {
+          if (answer === "" || !emailRegexp.test(answer)) {
+            return "Please Enter a Valid Email Address.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "internSchool",
+        message: "What is the Intern's School?",
+        validate: (answer) => {
+          if ((answer = "")) {
+            return "Please Enter a Valid School Name.";
+          }
+          return true;
+        },
+      },
+    ])
+    .then((data) => {
+      internInfo = new Intern(
+        data.internName,
+        data.internID,
+        data.internEmail,
+        data.internSchool
+      );
+      employeeArray.push(internInfo);
+      employeeType();
+    });
+}
+
+function createHtml() {
+  let html = render(employeeArray);
+
+  fs.access(
+    OUTPUT_DIR,
+    function (err) {
+      if (err && err.code === "ENOENT") {
+        fs.mkdir(OUTPUT_DIR);
+      }
+    },
+    fs.writeFile(outputPath, html, (err) => {
+      if (err) throw err;
+    })
+  );
+}
 
 inquirer
   .prompt([
@@ -73,96 +226,5 @@ inquirer
     employeeArray.push(managerInfo);
   })
   .then(() => {
-    inquirer
-      .prompt({
-        type: "input",
-        name: "engineerCount",
-        message: "How Many Engineers Are On the Team?",
-        validate: (answer) => {
-          if (isNaN(answer)) {
-            return "Please Enter a Number of Engineers.";
-          }
-          return true;
-        },
-      })
-      .then((data) => {
-        for (i = 0; i < data.engineerCount; i++) {
-          inquirer.prompt([
-            {
-              type: "input",
-              name: "engineerName",
-              message: "What is the Engineer's Name?",
-              validate: (answer) => {
-                if ((answer = "")) {
-                  return "Please Enter a Valid Name.";
-                }
-                return true;
-              },
-            },
-            {
-              type: "input",
-              name: "engineerId",
-              message: "What is the Engineer's ID Number?",
-              validate: (answer) => {
-                if (isNaN(answer)) {
-                  return "Please Enter a Valid ID Number.";
-                }
-                return true;
-              },
-            },
-            {
-              type: "input",
-              name: "engineerEmail",
-              message: "What is the Engineer's Email Address?",
-              validate: (answer) => {
-                if (answer === "" || !emailRegexp.test(answer)) {
-                  return "Please Enter a Valid Email Address.";
-                }
-                return true;
-              },
-            },
-            {
-              type: "input",
-              name: "engineerGitHub",
-              message: "What is the Engineer's GitHub Profile?",
-              validate: (answer) => {
-                if ((answer = "")) {
-                  return "Please Enter a Valid Name.";
-                }
-                return true;
-              },
-            },
-          ]);
-        }
-      });
+    employeeType();
   });
-// .then((data) => {
-//   engineerInfo = new Engineer(
-//     data.engineerName,
-//     data.engineeerId,
-//     data.engineerEmail,
-//     data.engineerGitHub
-//   );
-//   employeeArray.push(engineerInfo);
-// }
-//   });
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
