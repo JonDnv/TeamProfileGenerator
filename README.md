@@ -29,7 +29,9 @@ This project is designed to be used by managers to create a team profile by util
 
 ## Mock Up
 
-![Website](./assets/)
+![Website](./assets/My-Team.png)
+
+[Video Demo]()
 
 ## Contributing
 
