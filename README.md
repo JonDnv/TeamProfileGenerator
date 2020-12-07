@@ -31,7 +31,7 @@ This project is designed to be used by managers to create a team profile by util
 
 ![Website](./assets/My-Team.png)
 
-[Video Demo]()
+[Video Demo](https://drive.google.com/file/d/1HTGQlAhNwz4lpPSZOXRoClAjvpukwSCi/view?usp=sharing)
 
 ## Contributing
 

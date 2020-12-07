@@ -156,17 +156,13 @@ function intern() {
 function createHtml() {
   let html = render(employeeArray);
 
-  fs.access(
-    OUTPUT_DIR,
-    function (err) {
-      if (err && err.code === "ENOENT") {
-        fs.mkdir(OUTPUT_DIR);
-      }
-    },
-    fs.writeFile(outputPath, html, (err) => {
-      if (err) throw err;
-    })
-  );
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, {
+      recursive: true,
+    });
+  }
+
+  fs.writeFileSync(outputPath, html);
 }
 
 inquirer
